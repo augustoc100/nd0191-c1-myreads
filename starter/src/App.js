@@ -49,10 +49,7 @@ const initialBooks = [
   }
 ]
 
-const Book = (props)  => {
-  const {imageUrl, title, authors, currentShelf} = props;
-
-  console.log(currentShelf)
+const Book = ({data, onSelectBookShelf})  => {
 
   return (
     <div className="book">
@@ -63,11 +60,11 @@ const Book = (props)  => {
             width: 128,
             height: 188,
             backgroundImage:
-            `url(${imageUrl})`,
+            `url(${data.imageUrl})`,
           }}
         ></div>
         <div className="book-shelf-changer">
-          <select value={currentShelf}>
+          <select value={data.currentShelf} onChange={ (event) => { onSelectBookShelf(data, event.target.value)}}>
             <option value="none" disabled> Move to... </option>
             <option value="currentlyReading"> Currently Reading </option>
             <option value="wantToRead">Want to Read</option>
@@ -76,8 +73,8 @@ const Book = (props)  => {
           </select>
         </div>
       </div>
-      <div className="book-title">{title}</div>
-      <div className="book-authors">{authors}</div>
+      <div className="book-title">{data.title}</div>
+      <div className="book-authors">{data.authors.join('')}</div>
     </div>
   )
 
@@ -94,11 +91,7 @@ const BookShelf = ({name, books, onSelectBookShelf}) => {
               return (
                 <li key={b.title}>
                   <Book
-                    key={b.title}
-                    authors={b.authors.join(' ')}
-                    title={b.title}
-                    imageUrl={b.imageUrl}
-                    currentShelf={b.currentShelf}
+                    data={b}
                     onSelectBookShelf={onSelectBookShelf}
                   />
                 </li>
@@ -178,8 +171,11 @@ function App() {
   const [showSearchPage, setShowSearchPage] = useState(false);
 
   const onSelectBookShelf = (book, newShelf) => {
+    console.log("book before",book)
     book.currentShelf = newShelf
-    setMyBooks([...myBooks.filter( mb => mb.name !== book.name), book])
+    console.log("book after",book)
+
+    setMyBooks([...myBooks.filter(  mb => mb.title !== book.title), book])
   }
 
   const showPageToggle = () => {
