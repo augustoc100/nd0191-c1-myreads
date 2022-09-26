@@ -1,7 +1,13 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { getAll } from "./BooksAPI";
-import { initialBooks } from "./initialData"
+import { getAll, search, update } from "./BooksAPI";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
+
+
 
 const Book = ({data, onSelectBookShelf})  => {
 
@@ -140,17 +146,32 @@ function App() {
     let myBooks = await getAll()
 
     setMyBooks(myBooks)
-    // setMyBooks(initialBooks)
-
   }, [])
 
   return (
     <div className="app">
-      {showSearchPage ?
-          ( <ShowPage onSetShowPage={ () => showPageToggle() } showSearchPage="${showSearchPage}"/ >) :
-          ( <BookList books={myBooks} onSetShowPage={showPageToggle} onSelectBookShelf={onSelectBookShelf}/>)}
+      <BrowserRouter>
+    <Routes>
+      <Route exact path="/" element={
+          <BookList
+            books={myBooks}
+            onSetShowPage={showPageToggle}
+            onSelectBookShelf={onSelectBookShelf}
+          />
+
+      } />
+      <Route path="/search" element={
+
+          <ShowPage
+            onSetShowPage={ () => showPageToggle() }
+            showSearchPage="${showSearchPage}"
+            onSelectBookShelf={onSelectBookShelf}
+          / >
+      } />
+    </Routes>
+  </BrowserRouter>,
     </div>
-  );
+  )
 }
 
 export default App;
