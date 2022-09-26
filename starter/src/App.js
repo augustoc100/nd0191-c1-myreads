@@ -20,7 +20,7 @@ const Book = ({data, onSelectBookShelf})  => {
             width: 128,
             height: 188,
             backgroundImage:
-            `url(${data.imageLinks.thumbnail})`,
+            `url(${data.imageLinks? data.imageLinks.thumbnail : ''})`,
           }}
         ></div>
         <div className="book-shelf-changer">
@@ -34,7 +34,7 @@ const Book = ({data, onSelectBookShelf})  => {
         </div>
       </div>
       <div className="book-title">{data.title}</div>
-      <div className="book-authors">{data.authors.join('')}</div>
+      <div className="book-authors">{data.authors? data.authors.join('') : ""}</div>
     </div>
   )
 
@@ -65,7 +65,23 @@ const BookShelf = ({name, books, onSelectBookShelf}) => {
 }
 
 
-const ShowPage = ({onSetShowPage, showSearchPage}) => {
+const ShowPage = ({onSetShowPage, showSearchPage, onSelectBookShelf}) => {
+  const [searchBooks, setSearchBooks] = useState([])
+  const [query, setQuery] = useState('')
+
+  const test = (event) => {
+    setQuery(event.target.value)
+
+  }
+
+  useEffect(async () => {
+    if (query !== "") {
+      const response = await search(query, 10)
+      const data = response.error? [] : response
+      console.log('response', data)
+      setSearchBooks(data.filter( value => !!value))
+    }
+  }, [query])
   return (
         <div className="search-books">
           <div className="search-books-bar">
@@ -79,11 +95,25 @@ const ShowPage = ({onSetShowPage, showSearchPage}) => {
               <input
                 type="text"
                 placeholder="Search by title, author, or ISBN"
+                onChange={ (e) => {test(e)}}
               />
             </div>
           </div>
           <div className="search-books-results">
-            <ol className="books-grid"></ol>
+            <ol className="books-grid">
+          {
+            searchBooks.map( b => {
+              return (
+                <li key={b.id}>
+                  <Book
+                    data={b}
+                    onSelectBookShelf={onSelectBookShelf}
+                  />
+                </li>
+              )
+            })
+          }
+            </ol>
           </div>
         </div>
   )
@@ -93,6 +123,20 @@ const BookList = ({books, onSetShowPage, onSelectBookShelf}) => {
   const myCurrentReadingBooks = books.filter( b => b.shelf === 'currentlyReading')
   const myReadBooks = books.filter( b => b.shelf === 'read')
   const myWantToReadBooks = books.filter( b => b.shelf === 'wantToRead')
+  const list = [
+    {
+      name: 'Currently Reading',
+      books: myCurrentReadingBooks
+    },
+    {
+      name: 'Want to Read',
+      books: myWantToReadBooks
+    },
+    {
+      name: 'Read',
+      books: myReadBooks
+    }
+  ]
 
   return (
     <div className="list-books">
@@ -101,21 +145,16 @@ const BookList = ({books, onSetShowPage, onSelectBookShelf}) => {
       </div>
       <div className="list-books-content">
         <div>
-          <BookShelf
-            name='Currently Reading'
-            books={myCurrentReadingBooks}
-            onSelectBookShelf={onSelectBookShelf}
-          / >
-          <BookShelf
-            name='Want to Read'
-            books={myWantToReadBooks}
-            onSelectBookShelf={onSelectBookShelf}
-          / >
-          <BookShelf
-            name='Read'
-            books={myReadBooks}
-            onSelectBookShelf={onSelectBookShelf}
-          / >
+
+          {
+            list.map( bl => <BookShelf
+              key={bl.name}
+              name={bl.name}
+              books={bl.books}
+              onSelectBookShelf={onSelectBookShelf}
+                />
+                )
+              }
         </div>
       </div>
       <div className="open-search">
@@ -128,13 +167,12 @@ const BookList = ({books, onSetShowPage, onSelectBookShelf}) => {
 
 function App() {
   const [myBooks, setMyBooks] = useState([]);
-  const [showSearchPage, setShowSearchPage] = useState(false);
+  const [showSearchPage, setShowSearchPage] = useState(true);
 
-  const onSelectBookShelf = (book, newShelf) => {
-    console.log("book before",book)
+  const onSelectBookShelf = async (book, newShelf) => {
+    update(book, newShelf)
+
     book.shelf = newShelf
-    console.log("book after",book)
-
     setMyBooks([...myBooks.filter(  mb => mb.title !== book.title), book])
   }
 
