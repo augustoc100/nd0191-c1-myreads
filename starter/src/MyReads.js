@@ -1,6 +1,8 @@
 import "./App.css";
 import  BookShelf from "./BookShelf";
 
+import { Link } from 'react-router-dom'
+
 const MyReads = ({books, onSetShowPage, onSelectBookShelf}) => {
   const myCurrentReadingBooks = books.filter( b => b.shelf === 'currentlyReading')
   const myReadBooks = books.filter( b => b.shelf === 'read')
@@ -40,7 +42,7 @@ const MyReads = ({books, onSetShowPage, onSelectBookShelf}) => {
         </div>
       </div>
       <div className="open-search">
-        <a onClick={() => onSetShowPage()}>Add a book</a>
+        <Link  to="search"> Add a book</Link>
       </div>
     </div>
   )

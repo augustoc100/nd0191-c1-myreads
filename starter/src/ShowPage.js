@@ -1,5 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom'
 import { search } from "./BooksAPI";
 import Book from "./Book"
 
@@ -46,12 +47,12 @@ let booksWithStatus = data
   return (
         <div className="search-books">
           <div className="search-books-bar">
-            <button
+            <Link
               className="close-search"
-              onClick={() => onSetShowPage(!showSearchPage)}
+              to="/"
             >
               Close
-            </button>
+            </Link>
             <div className="search-books-input-wrapper">
               <input
                 type="text"
