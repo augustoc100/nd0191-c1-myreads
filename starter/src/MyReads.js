@@ -3,7 +3,7 @@ import  BookShelf from "./BookShelf";
 
 import { Link } from 'react-router-dom'
 
-const MyReads = ({books, onSetShowPage, onSelectBookShelf}) => {
+const MyReads = ({books, onSelectBookShelf}) => {
   const myCurrentReadingBooks = books.filter( b => b.shelf === 'currentlyReading')
   const myReadBooks = books.filter( b => b.shelf === 'read')
   const myWantToReadBooks = books.filter( b => b.shelf === 'wantToRead')
@@ -36,9 +36,9 @@ const MyReads = ({books, onSetShowPage, onSelectBookShelf}) => {
               name={bl.name}
               books={bl.books}
               onSelectBookShelf={onSelectBookShelf}
-                />
-                )
-              }
+            />
+            )
+          }
         </div>
       </div>
       <div className="open-search">

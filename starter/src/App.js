@@ -12,17 +12,12 @@ import MyReads from "./MyReads"
 
 function App() {
   const [myBooks, setMyBooks] = useState([]);
-  const [showSearchPage, setShowSearchPage] = useState(true);
 
   const onSelectBookShelf = async (book, newShelf) => {
     update(book, newShelf)
 
     book.shelf = newShelf
     setMyBooks([...myBooks.filter(  mb => mb.title !== book.title), book])
-  }
-
-  const showPageToggle = () => {
-    setShowSearchPage(!showSearchPage)
   }
 
   useEffect( async () => {
@@ -38,7 +33,6 @@ function App() {
       <Route exact path="/" element={
           <MyReads
             books={myBooks}
-            onSetShowPage={showPageToggle}
             onSelectBookShelf={onSelectBookShelf}
           />
 
@@ -46,8 +40,6 @@ function App() {
       <Route path="/search" element={
 
           <ShowPage
-            onSetShowPage={ () => showPageToggle() }
-            showSearchPage="${showSearchPage}"
             onSelectBookShelf={onSelectBookShelf}
             myBooks={myBooks}
           / >
